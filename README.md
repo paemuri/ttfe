@@ -14,7 +14,7 @@
 ### Brew
 
 ```sh
-brew tap Nhanderu/packages
+brew tap paemuri/packages
 brew install dois-mil
 ```
 
@@ -25,6 +25,8 @@ cargo install dois-mil
 ```
 
 ## Run
+
+### Default
 
 #### `dois-mil`
 
@@ -66,7 +68,7 @@ domain, without any additional terms or conditions.
 [1]: https://asciinema.org/a/349256
 [2]: ./LICENSE
 
-[badge-1-img]: https://img.shields.io/github/license/Nhanderu/dois-mil?style=flat-square
-[badge-1-link]: https://github.com/Nhanderu/dois-mil/blob/master/LICENSE
+[badge-1-img]: https://img.shields.io/github/license/paemuri/dois-mil?style=flat-square
+[badge-1-link]: https://github.com/paemuri/dois-mil/blob/master/LICENSE
 [badge-2-img]: https://img.shields.io/crates/v/dois-mil?style=flat-square
 [badge-2-link]: https://crates.io/crates/dois-mil
