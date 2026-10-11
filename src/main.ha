@@ -1,8 +1,10 @@
 use fmt;
+use io;
 use math::random;
 use os;
 use strconv;
 use time;
+use unix::tty;
 
 def MIN_GRID_SIZE: u8 = 2;
 def MAX_GRID_SIZE: u8 = 16;
@@ -74,11 +76,48 @@ fn run(grid_size: u8) void = {
 
 	spawn(&g);
 	spawn(&g);
-	draw(&g);
 
-	const moved = move(&g, direction::LEFT);
-	if (moved) { spawn(&g);	};
+	let term = tty::termios_query(os::stdin_file)!;
+	defer tty::termios_restore(&term);
+	tty::makeraw(&term)!;
+
 	draw(&g);
+	let buf: [3]u8 = [0...];
+	for (true) {
+		const n = match (io::read(os::stdin_file, buf[..])!) {
+		case let n: size =>
+			yield n;
+		case io::EOF =>
+			break;
+		};
+
+		// q or Ctrl-C quits.
+		if (buf[0]: rune == 'q' || buf[0] == 0x03) {
+			break;
+		};
+
+		// Arrow keys are 3 bytes: Esc, '[' and a letter. Everything else is ignored.
+		if (n != 3 || buf[0] != 0x1b || buf[1]: rune != '[') {
+			continue;
+		};
+		const dir = switch (buf[2]: rune) {
+		case 'A' =>
+			yield direction::UP;
+		case 'B' =>
+			yield direction::DOWN;
+		case 'C' =>
+			yield direction::RIGHT;
+		case 'D' =>
+			yield direction::LEFT;
+		case =>
+			continue;
+		};
+
+		if (move(&g, dir)) {
+			spawn(&g);
+		};
+		draw(&g);
+	};
 };
 
 // spawn fills one random empty cell.
@@ -113,13 +152,15 @@ type game = struct {
 };
 
 fn draw(g: *game) void = {
+	// Clear the screen and put the cursor in the top-left corner.
+	fmt::print("\x1b[H\x1b[2J")!;
 	for (let y = 0u8; y < g.grid_size; y += 1) {
 		for (let x = 0u8; x < g.grid_size; x += 1) {
 			fmt::printf("{:6}", g.grid[y][x])!;
 		};
-		fmt::println()!;
+		fmt::print("\r\n")!;
 	};
-	fmt::printfln("\nScore: {}", g.score)!;
+	fmt::printf("\r\nScore: {}\r\n", g.score)!;
 };
 
 type direction = enum {
