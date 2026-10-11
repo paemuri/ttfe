@@ -58,15 +58,20 @@ export fn main() void = {
 	case let n: u8 => yield n;
 	};
 
-	run(grid_size);
+	match (run(grid_size)) {
+	case void => void;
+	case let err: io::error =>
+		fmt::fatalf("ttfe: {}", io::strerror(err));
+	};
 };
 
 fn fail_arg(fmtstr: str, arg: str) never = {
+	fmt::error("ttfe: ")!;
 	fmt::errorfln(fmtstr, arg)!;
 	fmt::fatal("Run `ttfe --help` for usage.");
 };
 
-fn run(grid_size: u8) void = {
+fn run(grid_size: u8) (void | io::error) = {
 	const now = time::now(time::clock::REALTIME);
 	let g = game {
 		grid_size = grid_size,
@@ -81,23 +86,24 @@ fn run(grid_size: u8) void = {
 		fmt::fatal("ttfe: must run in a terminal");
 	};
 
-	let term = tty::termios_query(os::stdin_file)!;
+	let term = tty::termios_query(os::stdin_file)?;
 	defer tty::termios_restore(&term);
-	tty::makeraw(&term)!;
+	tty::makeraw(&term)?;
 	// \x1b[?1049h = uses the alternate screen.
 	// \x1b[?25l = hides the cursor.
-	fmt::print("\x1b[?1049h\x1b[?25l")!;
+	fmt::print("\x1b[?1049h\x1b[?25l")?;
 	defer {
 		// \x1b[?25h = shows cursor again.
 		// \x1b[?1049l = returns to the normal screen.
-		fmt::print("\x1b[?25h\x1b[?1049l")!;
-		bufio::flush(os::stdout)!;
+		// Errors are ignored: there is nowhere left to report them.
+		_ = fmt::print("\x1b[?25h\x1b[?1049l");
+		_ = bufio::flush(os::stdout);
 	};
 
-	draw(&g);
+	draw(&g)?;
 	let buf: [3]u8 = [0...];
 	for (true) {
-		const buf_bytes = match (io::read(os::stdin_file, buf[..])!) {
+		const buf_bytes = match (io::read(os::stdin_file, buf[..])?) {
 		case let n: size => yield n;
 		case io::EOF => break;
 		};
@@ -113,7 +119,7 @@ fn run(grid_size: u8) void = {
 		};
 
 		if (move(&g, dir)) { spawn(&g); };
-		draw(&g);
+		draw(&g)?;
 	};
 };
 
@@ -171,9 +177,7 @@ type game = struct {
 	rng: random::random,
 };
 
-fn draw(g: *game) void = {
-	defer bufio::flush(os::stdout)!;
-
+fn draw(g: *game) (void | io::error) = {
 	const grid_size = g.grid_size: size;
 	// Each cell is 6 columns wide. Below the grid: the score, a status
 	// line, an empty line and the quit hint.
@@ -182,13 +186,14 @@ fn draw(g: *game) void = {
 
 	// \x1b[H = puts the cursor in the top-left corner.
 	// \x1b[2J = clears the screen.
-	fmt::print("\x1b[H\x1b[2J")!;
+	fmt::print("\x1b[H\x1b[2J")?;
 
-	const term = tty::winsize(os::stdout_file)!;
+	const term = tty::winsize(os::stdout_file)?;
 	const columns = term.columns: size;
 	const rows = term.rows: size;
 	if (columns < width || rows < height) {
-		fmt::print("Terminal too small.")!;
+		fmt::print("Terminal too small.")?;
+		bufio::flush(os::stdout)?;
 		return;
 	};
 
@@ -198,7 +203,7 @@ fn draw(g: *game) void = {
 	const right = left + width;
 
 	for (let y = 0z; y < grid_size; y += 1) {
-		goto(top + y, left);
+		goto(top + y, left)?;
 		for (let x = 0z; x < grid_size; x += 1) {
 			const value = g.grid[y][x];
 			// \x1b[1;38;5;Xm = sets text style, where
@@ -207,14 +212,15 @@ fn draw(g: *game) void = {
 			// - X = color(value)
 			// \x1b[0m = resets to normal
 			fmt::printf("\x1b[1;38;5;{}m{:6}\x1b[0m",
-				color(value), value)!;
+				color(value), value)?;
 		};
 	};
 
 	let score_buf: [32]u8 = [0...];
+	// Can't fail: "Score: " and a u32 need at most 17 bytes.
 	const score_text = fmt::bsprintf(score_buf, "Score: {}", g.score)!;
-	goto(top + grid_size, right - len(score_text));
-	fmt::print(score_text)!;
+	goto(top + grid_size, right - len(score_text))?;
+	fmt::print(score_text)?;
 
 	let status_text = "";
 	if (has_won(g)) {
@@ -222,14 +228,15 @@ fn draw(g: *game) void = {
 	} else if (!has_moves(g)) {
 		status_text = "YOU LOST";
 	};
-	goto(top + grid_size + 1, right - len(status_text));
+	goto(top + grid_size + 1, right - len(status_text))?;
 	// \x1b[1m = sets as bold.
 	// \x1b[0m = resets.
-	fmt::printf("\x1b[1m{}\x1b[0m", status_text)!;
+	fmt::printf("\x1b[1m{}\x1b[0m", status_text)?;
 
 	const quit_text = "[q]uit";
-	goto(top + grid_size + 3, right - len(quit_text));
-	fmt::print(quit_text)!;
+	goto(top + grid_size + 3, right - len(quit_text))?;
+	fmt::print(quit_text)?;
+	bufio::flush(os::stdout)?;
 };
 
 fn color(value: u32) u8 = {
@@ -250,8 +257,8 @@ fn color(value: u32) u8 = {
 };
 
 // goto moves the cursor to the given row and column, both starting at 1.
-fn goto(row: size, col: size) void = {
-	fmt::printf("\x1b[{};{}H", row, col)!;
+fn goto(row: size, col: size) (void | io::error) = {
+	fmt::printf("\x1b[{};{}H", row, col)?;
 };
 
 type direction = enum {
