@@ -191,9 +191,9 @@ fn draw(g: *game) void = {
 		};
 	};
 
-	const score_test = strconv::u32tos(g.score);
-	goto(top + grid_size, right - len("Score: ") - len(score_test));
-	fmt::printf("Score: {}", score_test)!;
+	const score_text = strconv::u32tos(g.score);
+	goto(top + grid_size, right - len("Score: ") - len(score_text));
+	fmt::printf("Score: {}", score_text)!;
 
 	const quit_text = "[q]uit";
 	goto(top + grid_size + 3, right - len(quit_text));
