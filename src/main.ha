@@ -1,6 +1,8 @@
 use fmt;
+use math::random;
 use os;
 use strconv;
+use time;
 
 def MIN_GRID_SIZE: u8 = 2;
 def MAX_GRID_SIZE: u8 = 16;
@@ -35,12 +37,13 @@ export fn main() void = {
 			match (strconv::stou8(arg)) {
 			case let n: u8 =>
 				if (n < MIN_GRID_SIZE || n > MAX_GRID_SIZE) {
-					fail_arg("invalid value for \"grid size\": {}",
-						arg);
+					fail_arg("invalid value for "
+						"\"grid size\": {}", arg);
 				};
 				grid_size_opt = n;
 			case strconv::overflow =>
-				fail_arg("invalid value for \"grid size\": {}", arg);
+				fail_arg("invalid value for \"grid size\": {}",
+					arg);
 			case =>
 				fail_arg("unknown argument: {}", arg);
 			};
@@ -62,16 +65,46 @@ fn fail_arg(fmtstr: str, arg: str) never = {
 };
 
 fn run(grid_size: u8) void = {
-	let g = game { grid_size = grid_size, ... };
-	g.grid[0][0] = 2;
-	g.grid[1][2] = 4;
+	const now = time::now(time::clock::REALTIME);
+	let g = game {
+		grid_size = grid_size,
+		rng = random::init(now.sec: u64 ^ now.nsec: u64),
+		...
+	};
+	spawn(&g);
+	spawn(&g);
 	draw(&g);
+};
+
+// spawn fills one random empty cell.
+fn spawn(g: *game) void = {
+	// Lists all coords with zeroes.
+	let zeroes_coords: [MAX_GRID_SIZE: size * MAX_GRID_SIZE: size](u8, u8) =
+		[(0, 0)...];
+	let zeroes_count = 0z;
+	for (let i = 0u8; i < g.grid_size; i += 1) {
+		for (let j = 0u8; j < g.grid_size; j += 1) {
+			if (g.grid[i][j] == 0) {
+				zeroes_coords[zeroes_count] = (i, j);
+				zeroes_count += 1;
+			};
+		};
+	};
+	if (zeroes_count == 0) { return; };
+
+	const (i, j) = zeroes_coords[
+		random::u64n(&g.rng, zeroes_count: u64): size];
+
+	// Values to be filled are always 2 and 4. The latter only appearing in
+	// a 1/10 chance.
+	g.grid[i][j] = if (random::u64n(&g.rng, 10) == 0) 4 else 2;
 };
 
 type game = struct {
 	grid: [MAX_GRID_SIZE][MAX_GRID_SIZE]u32,
 	grid_size: u8,
 	score: u32,
+	rng: random::random,
 };
 
 fn draw(g: *game) void = {
