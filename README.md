@@ -8,6 +8,20 @@
 
 [![Example](https://asciinema.org/a/349256.svg "Example")][1]
 
+## Installation
+
+AUR / Arch Linux:
+
+```sh
+$AUR_HELPER -S ttfe
+```
+
+Nix:
+
+```sh
+nix profile install sourcehut:~paemuri/nix-pkgs#ttfe
+```
+
 ## Usage
 
 ```sh
