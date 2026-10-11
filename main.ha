@@ -1,10 +1,12 @@
 use bufio;
+use errors;
 use fmt;
 use io;
 use math::random;
 use os;
 use strconv;
 use time;
+use unix::signal;
 use unix::tty;
 
 def MIN_GRID_SIZE: u8 = 2;
@@ -71,6 +73,17 @@ fn fail_arg(fmtstr: str, arg: str) never = {
 	fmt::fatal("Run `ttfe --help` for usage.");
 };
 
+// Set by the SIGWINCH handler, cleared by the main loop.
+let resized: bool = false;
+
+fn on_resize(
+	_sig: signal::sig,
+	_info: *signal::siginfo,
+	_uctx: *opaque,
+) void = {
+	resized = true;
+};
+
 fn run(grid_size: u8) (void | io::error) = {
 	const now = time::now(time::clock::REALTIME);
 	let g = game {
@@ -100,12 +113,21 @@ fn run(grid_size: u8) (void | io::error) = {
 		_ = bufio::flush(os::stdout);
 	};
 
+	signal::handle(signal::sig::WINCH, &on_resize);
+
 	draw(&g)?;
 	let buf: [3]u8 = [0...];
 	for (true) {
-		const buf_bytes = match (io::read(os::stdin_file, buf[..])?) {
+		if (resized) {
+			resized = false;
+			draw(&g)?;
+		};
+
+		const buf_bytes = match (io::read(os::stdin_file, buf[..])) {
 		case let n: size => yield n;
 		case io::EOF => break;
+		case errors::interrupted => continue;
+		case let err: io::error => return err;
 		};
 
 		// q or Ctrl-C quits.
