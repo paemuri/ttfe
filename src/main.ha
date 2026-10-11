@@ -51,11 +51,35 @@ export fn main() void = {
 	case void => yield DEFAULT_GRID_SIZE;
 	case let n: u8 => yield n;
 	};
-	fmt::printfln("{}", grid_size)!;
+
+	run(grid_size);
 };
 
 fn fail_arg(fmtstr: str, arg: str) never = {
 	fmt::errorfln(fmtstr, arg)!;
 	fmt::errorln("Run `ttfe --help` for usage.")!;
 	os::exit(1);
+};
+
+fn run(grid_size: u8) void = {
+	let g = game { grid_size = grid_size, ... };
+	g.grid[0][0] = 2;
+	g.grid[1][2] = 4;
+	draw(&g);
+};
+
+type game = struct {
+	grid: [MAX_GRID_SIZE][MAX_GRID_SIZE]u32,
+	grid_size: u8,
+	score: u32,
+};
+
+fn draw(g: *game) void = {
+	for (let i = 0u8; i < g.grid_size; i += 1) {
+		for (let j = 0u8; j < g.grid_size; j += 1) {
+			fmt::printf("{:6}", g.grid[i][j])!;
+		};
+		fmt::println()!;
+	};
+	fmt::printfln("\nScore: {}", g.score)!;
 };
