@@ -80,6 +80,9 @@ fn run(grid_size: u8) void = {
 	let term = tty::termios_query(os::stdin_file)!;
 	defer tty::termios_restore(&term);
 	tty::makeraw(&term)!;
+	// Use the alternate screen and hide the cursor, restoring both on exit.
+	fmt::print("\x1b[?1049h\x1b[?25l")!;
+	defer fmt::print("\x1b[?25h\x1b[?1049l")!;
 
 	draw(&g);
 	let buf: [3]u8 = [0...];
@@ -175,15 +178,47 @@ type game = struct {
 };
 
 fn draw(g: *game) void = {
+	const grid_size = g.grid_size: size;
+	// Each cell is 6 columns wide. Below the grid: the score, a status
+	// line, an empty line and the quit hint.
+	const width = grid_size * 6;
+	const height = grid_size + 4;
+
 	// Clear the screen and put the cursor in the top-left corner.
 	fmt::print("\x1b[H\x1b[2J")!;
-	for (let y = 0u8; y < g.grid_size; y += 1) {
-		for (let x = 0u8; x < g.grid_size; x += 1) {
+
+	const term = tty::winsize(os::stdout_file)!;
+	const columns = term.columns: size;
+	const rows = term.rows: size;
+	if (columns < width || rows < height) {
+		fmt::print("Terminal too small.")!;
+		return;
+	};
+
+	// Center the block, rounding up. Terminal rows and columns start at 1.
+	const left = (columns - width + 1) / 2 + 1;
+	const top = (rows - height + 1) / 2 + 1;
+	const right = left + width;
+
+	for (let y = 0z; y < grid_size; y += 1) {
+		goto(top + y, left);
+		for (let x = 0z; x < grid_size; x += 1) {
 			fmt::printf("{:6}", g.grid[y][x])!;
 		};
-		fmt::print("\r\n")!;
 	};
-	fmt::printf("\r\nScore: {}\r\n", g.score)!;
+
+	const score_test = strconv::u32tos(g.score);
+	goto(top + grid_size, right - len("Score: ") - len(score_test));
+	fmt::printf("Score: {}", score_test)!;
+
+	const quit_text = "[q]uit";
+	goto(top + grid_size + 3, right - len(quit_text));
+	fmt::print(quit_text)!;
+};
+
+// goto moves the cursor to the given row and column, both starting at 1.
+fn goto(row: size, col: size) void = {
+	fmt::printf("\x1b[{};{}H", row, col)!;
 };
 
 type direction = enum {
