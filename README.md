@@ -1,13 +1,18 @@
 # TTFE
 
 [![License][badge-1-img]][badge-1-link]
-[![Crates.io][badge-2-img]][badge-2-link]
 
 2048 game in the terminal!
 
 ## Game
 
 [![Example](https://asciinema.org/a/349256.svg "Example")][1]
+
+## Build
+
+```sh
+hare build
+```
 
 ## Usage
 
@@ -21,7 +26,10 @@ Or, to run the game with a different grid size (e.g. 6):
 ttfe 6
 ```
 
-The bigger the grid, the easier the game gets.
+The bigger the grid, the easier the game gets (up to 16).
+
+Move the tiles with the arrow keys or with vi-style navigation. Quit with `q` or
+Ctrl-C.
 
 ## Source code
 
@@ -43,5 +51,3 @@ additional terms or conditions.
 
 [badge-1-img]: https://img.shields.io/badge/license-Unlicense-green?style=flat-square
 [badge-1-link]: ./LICENSE
-[badge-2-img]: https://img.shields.io/crates/v/ttfe?style=flat-square
-[badge-2-link]: https://crates.io/crates/ttfe
