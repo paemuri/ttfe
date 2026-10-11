@@ -1,9 +1,9 @@
 [package]
-name = "dois-mil"
+name = "ttfe"
 description = "2048 game in the terminal!"
 version = "1.0.3"
-authors = ["Rafael Escobar <rescobar@protonmail.com>"]
-repository = "https://git.sr.ht/~paemuri/dois-mil"
+authors = ["Rafael Escobar <rafael@paemuri.com>"]
+repository = "https://git.sr.ht/~paemuri/ttfe"
 license = "Unlicense"
 readme = "README.md"
 categories = ["games"]
