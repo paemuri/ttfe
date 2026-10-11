@@ -1,3 +1,4 @@
+use bufio;
 use fmt;
 use io;
 use math::random;
@@ -80,9 +81,15 @@ fn run(grid_size: u8) void = {
 	let term = tty::termios_query(os::stdin_file)!;
 	defer tty::termios_restore(&term);
 	tty::makeraw(&term)!;
-	// Use the alternate screen and hide the cursor, restoring both on exit.
+	// \x1b[?1049h = uses the alternate screen.
+	// \x1b[?25l = hides the cursor.
 	fmt::print("\x1b[?1049h\x1b[?25l")!;
-	defer fmt::print("\x1b[?25h\x1b[?1049l")!;
+	defer {
+		// \x1b[?25h = shows cursor again.
+		// \x1b[?1049l = returns to the normal screen.
+		fmt::print("\x1b[?25h\x1b[?1049l")!;
+		bufio::flush(os::stdout)!;
+	};
 
 	draw(&g);
 	let buf: [3]u8 = [0...];
@@ -162,6 +169,8 @@ type game = struct {
 };
 
 fn draw(g: *game) void = {
+	defer bufio::flush(os::stdout)!;
+
 	const grid_size = g.grid_size: size;
 	// Each cell is 6 columns wide. Below the grid: the score, a status
 	// line, an empty line and the quit hint.
