@@ -196,7 +196,14 @@ fn draw(g: *game) void = {
 	for (let y = 0z; y < grid_size; y += 1) {
 		goto(top + y, left);
 		for (let x = 0z; x < grid_size; x += 1) {
-			fmt::printf("{:6}", g.grid[y][x])!;
+			const value = g.grid[y][x];
+			// \x1b[1;38;5;Xm = sets text style, where
+			// - 1 = bold
+			// - 38;5 = fg color
+			// - X = color(value)
+			// \x1b[0m = resets to normal
+			fmt::printf("\x1b[1;38;5;{}m{:6}\x1b[0m",
+				color(value), value)!;
 		};
 	};
 
@@ -208,6 +215,23 @@ fn draw(g: *game) void = {
 	const quit_text = "[q]uit";
 	goto(top + grid_size + 3, right - len(quit_text));
 	fmt::print(quit_text)!;
+};
+
+fn color(value: u32) u8 = {
+	switch (value) {
+	case 0 => return 247; // grey
+	case 2 => return 202; // orange-red
+	case 4 => return 214; // orange
+	case 8 => return 226; // yellow
+	case 16 => return 40; // green
+	case 32 => return 47; // spring green
+	case 64 => return 14; // bright cyan
+	case 128 => return 33; // dodger blue
+	case 256 => return 141; // medium purple
+	case 512 => return 213; // orchid
+	case 1024 => return 201; // magenta
+	case => return 196; // red
+	};
 };
 
 // goto moves the cursor to the given row and column, both starting at 1.
