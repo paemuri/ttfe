@@ -14,7 +14,7 @@ Arguments:
   size  Defines the game's grid size (defaults to 4)";
 
 export fn main() void = {
-  let game_size_arg: nullable *u8 = null;
+  let grid_size_opt: (void | u8) = void;
 
   for (const arg .. os::args[1..]) {
     switch (arg) {
@@ -25,13 +25,12 @@ export fn main() void = {
       fmt::printf("ttfe {}\n", VERSION)!;
       os::exit(0);
     case =>
-      if (game_size_arg != null) {
+      if (grid_size_opt is u8) {
         fmt::errorf("unknown argument: {}\nRun `ttfe --help` for usage.\n", arg)!;
         os::exit(1);
       };
       match (strconv::stou8(arg)) {
-      case let n: u8 =>
-        game_size_arg = &n;
+      case let n: u8 => grid_size_opt = n;
       case =>
         fmt::errorf("unknown argument: {}\nRun `ttfe --help` for usage.\n", arg)!;
         os::exit(1);
@@ -39,12 +38,10 @@ export fn main() void = {
     };
   };
 
-  const game_size: u8 =
-    match (game_size_arg) {
-    case null =>
-      yield 4;
-    case let n: *u8 =>
-      yield *n;
+  const grid_size: u8 =
+    match (grid_size_opt) {
+    case void => yield 4;
+    case let n: u8 => yield n;
     };
-  fmt::printf("{}\n", game_size)!;
+  fmt::printf("{}\n", grid_size)!;
 };
