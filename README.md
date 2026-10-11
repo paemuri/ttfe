@@ -1,4 +1,4 @@
-# Dois Mil
+# TTFE
 
 [![License][badge-1-img]][badge-1-link]
 [![Crates.io][badge-2-img]][badge-2-link]
@@ -9,57 +9,39 @@
 
 [![Example](https://asciinema.org/a/349256.svg "Example")][1]
 
-## Install
+## Usage
 
 ```sh
-cargo install dois-mil
+ttfe
 ```
 
-## Run
+Or, to run the game with a different grid size (e.g. 6):
 
-### Default
-
-#### `dois-mil`
-
-Runs the game with default configuration.
-
-### Commands
-
-#### `dois-mil help`
-
-Shows the CLI help message.
-
-#### `dois-mil version`
-
-Shows the CLI version.
-
-### Arguments
-
-#### `dois-mil <grid size>`
-
-Runs the game with a different grid size (e.g. `dois-mil 6` executes a
-6x6 grid).
+```sh
+ttfe 6
+```
 
 The bigger the grid, the easier the game gets.
 
-## To-do
+## Source code
 
-- [ ] Game saving
+The main repository is on [SourceHut][2]. A mirror exists on [GitHub][3] for
+convenience, but it might occasionally be outdated.
 
-## License
+### License and contribution
 
-This project code is in the public domain. See the [LICENSE file][2].
+This project's code is in the public domain. See the [LICENSE file][4].
 
-### Contribution
-
-Unless you explicitly state otherwise, any contribution intentionally
-submitted for inclusion in the work by you shall be in the public
-domain, without any additional terms or conditions.
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you shall be in the public domain, without any
+additional terms or conditions.
 
 [1]: https://asciinema.org/a/349256
-[2]: ./LICENSE
+[2]: https://git.sr.ht/~paemuri/ttfe
+[3]: https://github.com/paemuri/ttfe
+[4]: ./LICENSE
 
 [badge-1-img]: https://img.shields.io/badge/license-Unlicense-green?style=flat-square
 [badge-1-link]: ./LICENSE
-[badge-2-img]: https://img.shields.io/crates/v/dois-mil?style=flat-square
-[badge-2-link]: https://crates.io/crates/dois-mil
+[badge-2-img]: https://img.shields.io/crates/v/ttfe?style=flat-square
+[badge-2-link]: https://crates.io/crates/ttfe
