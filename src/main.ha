@@ -123,15 +123,32 @@ fn draw(g: *game) void = {
 };
 
 type direction = enum {
-	UP,
-	RIGHT,
-	DOWN,
 	LEFT,
+	RIGHT,
+	UP,
+	DOWN,
+};
+
+// cell_at maps i/j into x/y (actual coordinates) and fetches the cell.
+fn cell_at(g: *game, i: u8, j: u8, dir: direction) *u32 = {
+	const last = g.grid_size - 1;
+	// i is the "line" (row for LEFT/RIGHT or column for UP/DOWN) and j the position of the cell inside that line (LEFT/UP is the same as the grid's array, while RIGHT/DOWN is reversed).
+	// j represents the position of the cell from the ending point of the movement, e.g. LEFT counts 0 from the left to the right.
+	switch (dir) {
+	case direction::LEFT =>
+		return &g.grid[i][j];
+	case direction::RIGHT =>
+		return &g.grid[i][last - j];
+	case direction::UP =>
+		return &g.grid[j][i];
+	case direction::DOWN =>
+		return &g.grid[last - j][i];
+	};
 };
 
 fn move(g: *game, dir: direction) bool = {
 	let moved = false;
-	for (let y = 0u8; y < g.grid_size; y += 1) {
+	for (let i = 0u8; i < g.grid_size; i += 1) {
 		// Will represent the new line (row for LEFT/RIGHT or column for UP/DOWN) _after_ the movement.
 		let line: [MAX_GRID_SIZE]u32 = [0...];
 		// Items in line.
@@ -139,8 +156,9 @@ fn move(g: *game, dir: direction) bool = {
 		// Whether last item in line was just merged.
 		let merged = false;
 
-		for (let x = 0u8; x < g.grid_size; x += 1) {
-			const cell = g.grid[y][x];
+		// This iterates the line from the ending point of the movement, e.g. LEFT counts 0 from the left to the right.
+		for (let j = 0u8; j < g.grid_size; j += 1) {
+			const cell = *cell_at(g, i, j, dir);
 
 			// Skips zeroes. Cells move over them.
 			if (cell == 0) {
@@ -164,11 +182,12 @@ fn move(g: *game, dir: direction) bool = {
 		};
 
 		// Copy moved line into grid.
-		for (let x = 0u8; x < g.grid_size; x += 1) {
-			if (g.grid[y][x] != line[x]) {
+		for (let j = 0u8; j < g.grid_size; j += 1) {
+			const cell = cell_at(g, i, j, dir);
+			if (*cell != line[j]) {
 				moved = true;
 			};
-			g.grid[y][x] = line[x];
+			*cell = line[j];
 		};
 	};
 	return moved;
