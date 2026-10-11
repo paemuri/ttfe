@@ -132,8 +132,11 @@ type direction = enum {
 // cell_at maps i/j into x/y (actual coordinates) and fetches the cell.
 fn cell_at(g: *game, i: u8, j: u8, dir: direction) *u32 = {
 	const last = g.grid_size - 1;
-	// i is the "line" (row for LEFT/RIGHT or column for UP/DOWN) and j the position of the cell inside that line (LEFT/UP is the same as the grid's array, while RIGHT/DOWN is reversed).
-	// j represents the position of the cell from the ending point of the movement, e.g. LEFT counts 0 from the left to the right.
+	// i is the "line" (row for LEFT/RIGHT or column for UP/DOWN) and j the
+	// position of the cell inside that line (LEFT/UP is the same as the
+	// grid's array, while RIGHT/DOWN is reversed).
+	// j represents the position of the cell from the ending point of the
+	// movement, e.g. LEFT counts 0 from the left to the right.
 	switch (dir) {
 	case direction::LEFT =>
 		return &g.grid[i][j];
@@ -149,14 +152,16 @@ fn cell_at(g: *game, i: u8, j: u8, dir: direction) *u32 = {
 fn move(g: *game, dir: direction) bool = {
 	let moved = false;
 	for (let i = 0u8; i < g.grid_size; i += 1) {
-		// Will represent the new line (row for LEFT/RIGHT or column for UP/DOWN) _after_ the movement.
+		// Will represent the new line (row for LEFT/RIGHT or column for
+		// UP/DOWN) _after_ the movement.
 		let line: [MAX_GRID_SIZE]u32 = [0...];
 		// Items in line.
 		let count = 0u8;
 		// Whether last item in line was just merged.
 		let merged = false;
 
-		// This iterates the line from the ending point of the movement, e.g. LEFT counts 0 from the left to the right.
+		// This iterates the line from the ending point of the movement,
+		// e.g. LEFT counts 0 from the left to the right.
 		for (let j = 0u8; j < g.grid_size; j += 1) {
 			const cell = *cell_at(g, i, j, dir);
 
