@@ -96,20 +96,10 @@ fn run(grid_size: u8) void = {
 			break;
 		};
 
-		// Arrow keys are 3 bytes: Esc, '[' and a letter. Everything else is ignored.
-		if (n != 3 || buf[0] != 0x1b || buf[1]: rune != '[') {
-			continue;
-		};
-		const dir = switch (buf[2]: rune) {
-		case 'A' =>
-			yield direction::UP;
-		case 'B' =>
-			yield direction::DOWN;
-		case 'C' =>
-			yield direction::RIGHT;
-		case 'D' =>
-			yield direction::LEFT;
-		case =>
+		const dir = match (key_direction(buf[..n])) {
+		case let d: direction =>
+			yield d;
+		case void =>
 			continue;
 		};
 
@@ -117,6 +107,39 @@ fn run(grid_size: u8) void = {
 			spawn(&g);
 		};
 		draw(&g);
+	};
+};
+
+fn key_direction(key: []u8) (direction | void) = {
+	if (len(key) == 1) {
+		switch (key[0]: rune) {
+		case 'h' =>
+			return direction::LEFT;
+		case 'j' =>
+			return direction::DOWN;
+		case 'k' =>
+			return direction::UP;
+		case 'l' =>
+			return direction::RIGHT;
+		case =>
+			return;
+		};
+	};
+
+	// Arrow keys are 3 bytes: Esc, '[' and a letter.
+	if (len(key) == 3 && key[0] == 0x1b && key[1]: rune == '[') {
+		switch (key[2]: rune) {
+		case 'A' =>
+			return direction::UP;
+		case 'B' =>
+			return direction::DOWN;
+		case 'C' =>
+			return direction::RIGHT;
+		case 'D' =>
+			return direction::LEFT;
+		case =>
+			return;
+		};
 	};
 };
 
