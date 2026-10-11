@@ -144,7 +144,8 @@ fn move_left(g: *game) bool = {
 			// 1. There are items before
 			// 2. The last one has the same value as current one
 			// 3. Last one wasn't merged
-			// Then merge it. Otherwise, just add to the row and continue.
+			// Then merge it. Otherwise, just add to the row and
+			// continue.
 			if (count > 0 && row[count-1] == cell && !merged) {
 				row[count-1] *= 2;
 				merged = true;
