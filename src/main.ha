@@ -230,7 +230,7 @@ fn color(value: u32) u8 = {
 	case 256 => return 141; // medium purple
 	case 512 => return 213; // orchid
 	case 1024 => return 201; // magenta
-	case => return 196; // red
+	case => return 231; // white
 	};
 };
 
