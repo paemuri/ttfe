@@ -87,9 +87,9 @@ fn spawn(g: *game) void = {
 	let zeroes_coords: [MAX_GRID_SIZE: size * MAX_GRID_SIZE: size](u8, u8) =
 		[(0, 0)...];
 	let zeroes_count = 0z;
-	for (let x = 0u8; x < g.grid_size; x += 1) {
-		for (let y = 0u8; y < g.grid_size; y += 1) {
-			if (g.grid[x][y] == 0) {
+	for (let y = 0u8; y < g.grid_size; y += 1) {
+		for (let x = 0u8; x < g.grid_size; x += 1) {
+			if (g.grid[y][x] == 0) {
 				zeroes_coords[zeroes_count] = (x, y);
 				zeroes_count += 1;
 			};
@@ -102,7 +102,7 @@ fn spawn(g: *game) void = {
 
 	// Values to be filled are always 2 and 4. The latter only appearing in
 	// a 1/10 chance.
-	g.grid[x][y] = if (random::u64n(&g.rng, 10) == 0) 4 else 2;
+	g.grid[y][x] = if (random::u64n(&g.rng, 10) == 0) 4 else 2;
 };
 
 type game = struct {
@@ -113,9 +113,9 @@ type game = struct {
 };
 
 fn draw(g: *game) void = {
-	for (let x = 0u8; x < g.grid_size; x += 1) {
-		for (let y = 0u8; y < g.grid_size; y += 1) {
-			fmt::printf("{:6}", g.grid[x][y])!;
+	for (let y = 0u8; y < g.grid_size; y += 1) {
+		for (let x = 0u8; x < g.grid_size; x += 1) {
+			fmt::printf("{:6}", g.grid[y][x])!;
 		};
 		fmt::println()!;
 	};
@@ -124,7 +124,7 @@ fn draw(g: *game) void = {
 
 fn move_left(g: *game) bool = {
 	let moved = false;
-	for (let x = 0u8; x < g.grid_size; x += 1) {
+	for (let y = 0u8; y < g.grid_size; y += 1) {
 		// Will represent the new row, _after_ the movement.
 		let row: [MAX_GRID_SIZE]u32 = [0...];
 		// Items in row.
@@ -132,8 +132,8 @@ fn move_left(g: *game) bool = {
 		// Whether last item in row was just merged.
 		let merged = false;
 
-		for (let y = 0u8; y < g.grid_size; y += 1) {
-			const cell = g.grid[x][y];
+		for (let x = 0u8; x < g.grid_size; x += 1) {
+			const cell = g.grid[y][x];
 
 			// Ignore zeroes. Game's rules.
 			if (cell == 0) {
@@ -157,11 +157,11 @@ fn move_left(g: *game) bool = {
 		};
 
 		// Copy moved row into grid.
-		for (let y = 0u8; y < g.grid_size; y += 1) {
-			if (g.grid[x][y] != row[y]) {
+		for (let x = 0u8; x < g.grid_size; x += 1) {
+			if (g.grid[y][x] != row[x]) {
 				moved = true;
 			};
-			g.grid[x][y] = row[y];
+			g.grid[y][x] = row[x];
 		};
 	};
 	return moved;
