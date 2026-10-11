@@ -1,4 +1,5 @@
 use math::random;
+use time;
 
 type game = struct {
 	grid: [MAX_GRID_SIZE][MAX_GRID_SIZE]u32,
@@ -12,6 +13,18 @@ type direction = enum {
 	RIGHT,
 	UP,
 	DOWN,
+};
+
+fn new_game(grid_size: u8) game = {
+	const now = time::now(time::clock::REALTIME);
+	let g = game {
+		grid_size = grid_size,
+		rng = random::init(now.sec: u64 ^ now.nsec: u64),
+		...
+	};
+	spawn(&g);
+	spawn(&g);
+	return g;
 };
 
 fn move(g: *game, dir: direction) bool = {

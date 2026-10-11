@@ -54,7 +54,8 @@ export fn main() void = {
 	case let n: u8 => yield n;
 	};
 
-	match (run(grid_size)) {
+	let g = new_game(grid_size);
+	match (play(&g)) {
 	case void => void;
 	case let err: io::error =>
 		fmt::fatalf("ttfe: {}", io::strerror(err));

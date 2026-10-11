@@ -2,23 +2,11 @@ use bufio;
 use errors;
 use fmt;
 use io;
-use math::random;
 use os;
-use time;
 use unix::signal;
 use unix::tty;
 
-fn run(grid_size: u8) (void | io::error) = {
-	const now = time::now(time::clock::REALTIME);
-	let g = game {
-		grid_size = grid_size,
-		rng = random::init(now.sec: u64 ^ now.nsec: u64),
-		...
-	};
-
-	spawn(&g);
-	spawn(&g);
-
+fn play(g: *game) (void | io::error) = {
 	if (!tty::isatty(os::stdin_file) || !tty::isatty(os::stdout_file)) {
 		fmt::fatal("ttfe: must run in a terminal");
 	};
@@ -39,12 +27,12 @@ fn run(grid_size: u8) (void | io::error) = {
 
 	signal::handle(signal::sig::WINCH, &on_resize);
 
-	draw(&g)?;
+	draw_grid(g)?;
 	let buf: [3]u8 = [0...];
 	for (true) {
 		if (resized) {
 			resized = false;
-			draw(&g)?;
+			draw_grid(g)?;
 		};
 
 		const buf_bytes = match (io::read(os::stdin_file, buf[..])) {
@@ -64,12 +52,12 @@ fn run(grid_size: u8) (void | io::error) = {
 		case void => continue;
 		};
 
-		if (move(&g, dir)) { spawn(&g); };
-		draw(&g)?;
+		if (move(g, dir)) { spawn(g); };
+		draw_grid(g)?;
 	};
 };
 
-fn draw(g: *game) (void | io::error) = {
+fn draw_grid(g: *game) (void | io::error) = {
 	const grid_size = g.grid_size: size;
 	// Each cell is 6 columns wide. Below the grid: the score, a status
 	// line, an empty line and the quit hint.
