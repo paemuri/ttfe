@@ -177,8 +177,8 @@ fn draw(g: *game) void = {
 	const width = grid_size * 6;
 	const height = grid_size + 4;
 
-	// \x1b[H = clears the screen.
-	// \x1b[2J = puts the cursor in the top-left corner.
+	// \x1b[H = puts the cursor in the top-left corner.
+	// \x1b[2J = clears the screen.
 	fmt::print("\x1b[H\x1b[2J")!;
 
 	const term = tty::winsize(os::stdout_file)!;
