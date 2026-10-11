@@ -1,5 +1,0 @@
-comment_width = 80
-error_on_line_overflow = true
-max_width = 80
-tab_spaces = 2
-wrap_comments = true
