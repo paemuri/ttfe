@@ -71,6 +71,7 @@ fn run(grid_size: u8) void = {
 		rng = random::init(now.sec: u64 ^ now.nsec: u64),
 		...
 	};
+
 	spawn(&g);
 	spawn(&g);
 	draw(&g);
@@ -82,22 +83,22 @@ fn spawn(g: *game) void = {
 	let zeroes_coords: [MAX_GRID_SIZE: size * MAX_GRID_SIZE: size](u8, u8) =
 		[(0, 0)...];
 	let zeroes_count = 0z;
-	for (let i = 0u8; i < g.grid_size; i += 1) {
-		for (let j = 0u8; j < g.grid_size; j += 1) {
-			if (g.grid[i][j] == 0) {
-				zeroes_coords[zeroes_count] = (i, j);
+	for (let x = 0u8; x < g.grid_size; x += 1) {
+		for (let y = 0u8; y < g.grid_size; y += 1) {
+			if (g.grid[x][y] == 0) {
+				zeroes_coords[zeroes_count] = (x, y);
 				zeroes_count += 1;
 			};
 		};
 	};
 	if (zeroes_count == 0) { return; };
 
-	const (i, j) = zeroes_coords[
+	const (x, y) = zeroes_coords[
 		random::u64n(&g.rng, zeroes_count: u64): size];
 
 	// Values to be filled are always 2 and 4. The latter only appearing in
 	// a 1/10 chance.
-	g.grid[i][j] = if (random::u64n(&g.rng, 10) == 0) 4 else 2;
+	g.grid[x][y] = if (random::u64n(&g.rng, 10) == 0) 4 else 2;
 };
 
 type game = struct {
@@ -108,9 +109,9 @@ type game = struct {
 };
 
 fn draw(g: *game) void = {
-	for (let i = 0u8; i < g.grid_size; i += 1) {
-		for (let j = 0u8; j < g.grid_size; j += 1) {
-			fmt::printf("{:6}", g.grid[i][j])!;
+	for (let x = 0u8; x < g.grid_size; x += 1) {
+		for (let y = 0u8; y < g.grid_size; y += 1) {
+			fmt::printf("{:6}", g.grid[x][y])!;
 		};
 		fmt::println()!;
 	};
