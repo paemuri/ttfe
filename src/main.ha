@@ -177,7 +177,8 @@ fn draw(g: *game) void = {
 	const width = grid_size * 6;
 	const height = grid_size + 4;
 
-	// Clear the screen and put the cursor in the top-left corner.
+	// \x1b[H = clears the screen.
+	// \x1b[2J = puts the cursor in the top-left corner.
 	fmt::print("\x1b[H\x1b[2J")!;
 
 	const term = tty::winsize(os::stdout_file)!;
@@ -211,6 +212,17 @@ fn draw(g: *game) void = {
 	const score_text = fmt::bsprintf(score_buf, "Score: {}", g.score)!;
 	goto(top + grid_size, right - len(score_text));
 	fmt::print(score_text)!;
+
+	let status_text = "";
+	if (has_won(g)) {
+		status_text = "YOU WON";
+	} else if (!has_moves(g)) {
+		status_text = "YOU LOST";
+	};
+	goto(top + grid_size + 1, right - len(status_text));
+	// \x1b[1m = sets as bold.
+	// \x1b[0m = resets.
+	fmt::printf("\x1b[1m{}\x1b[0m", status_text)!;
 
 	const quit_text = "[q]uit";
 	goto(top + grid_size + 3, right - len(quit_text));
@@ -313,4 +325,33 @@ fn move(g: *game, dir: direction) bool = {
 		};
 	};
 	return moved;
+};
+
+fn has_won(g: *game) bool = {
+	for (let y = 0u8; y < g.grid_size; y += 1) {
+		for (let x = 0u8; x < g.grid_size; x += 1) {
+			if (g.grid[y][x] >= 2048) {
+				return true;
+			};
+		};
+	};
+	return false;
+};
+
+fn has_moves(g: *game) bool = {
+	const last = g.grid_size - 1;
+	for (let y = 0u8; y < g.grid_size; y += 1) {
+		for (let x = 0u8; x < g.grid_size; x += 1) {
+			const value = g.grid[y][x];
+			// There are moves if there is either an empty cell, or two equal tiles are next to each other.
+			if (value == 0) { return true; };
+			if (x < last && value == g.grid[y][x + 1]) {
+				return true;
+			};
+			if (y < last && value == g.grid[y + 1][x]) {
+				return true;
+			};
+		};
+	};
+	return false;
 };
