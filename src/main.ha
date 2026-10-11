@@ -200,9 +200,10 @@ fn draw(g: *game) void = {
 		};
 	};
 
-	const score_text = strconv::u32tos(g.score);
-	goto(top + grid_size, right - len("Score: ") - len(score_text));
-	fmt::printf("Score: {}", score_text)!;
+	let score_buf: [32]u8 = [0...];
+	const score_text = fmt::bsprintf(score_buf, "Score: {}", g.score)!;
+	goto(top + grid_size, right - len(score_text));
+	fmt::print(score_text)!;
 
 	const quit_text = "[q]uit";
 	goto(top + grid_size + 3, right - len(quit_text));
