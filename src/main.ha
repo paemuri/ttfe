@@ -76,7 +76,7 @@ fn run(grid_size: u8) void = {
 	spawn(&g);
 	draw(&g);
 
-	const moved = move_left(&g);
+	const moved = move(&g, direction::LEFT);
 	if (moved) { spawn(&g);	};
 	draw(&g);
 };
@@ -122,20 +122,27 @@ fn draw(g: *game) void = {
 	fmt::printfln("\nScore: {}", g.score)!;
 };
 
-fn move_left(g: *game) bool = {
+type direction = enum {
+	UP,
+	RIGHT,
+	DOWN,
+	LEFT,
+};
+
+fn move(g: *game, dir: direction) bool = {
 	let moved = false;
 	for (let y = 0u8; y < g.grid_size; y += 1) {
-		// Will represent the new row, _after_ the movement.
-		let row: [MAX_GRID_SIZE]u32 = [0...];
-		// Items in row.
+		// Will represent the new line (row for LEFT/RIGHT or column for UP/DOWN) _after_ the movement.
+		let line: [MAX_GRID_SIZE]u32 = [0...];
+		// Items in line.
 		let count = 0u8;
-		// Whether last item in row was just merged.
+		// Whether last item in line was just merged.
 		let merged = false;
 
 		for (let x = 0u8; x < g.grid_size; x += 1) {
 			const cell = g.grid[y][x];
 
-			// Skips zeroes. Cells will move past them.
+			// Skips zeroes. Cells move over them.
 			if (cell == 0) {
 				continue;
 			};
@@ -144,24 +151,24 @@ fn move_left(g: *game) bool = {
 			// 1. There are items before
 			// 2. The last one has the same value as current one
 			// 3. Last one wasn't merged
-			// Then merge it. Otherwise, just add to the row.
-			if (count > 0 && row[count - 1] == cell && !merged) {
-				row[count - 1] *= 2;
+			// Then merge it. Otherwise, just add to the line.
+			if (count > 0 && line[count - 1] == cell && !merged) {
+				line[count - 1] *= 2;
 				merged = true;
-				g.score += row[count - 1];
+				g.score += line[count - 1];
 			} else {
-				row[count] = cell;
+				line[count] = cell;
 				count += 1;
 				merged = false;
 			};
 		};
 
-		// Copy moved row into grid.
+		// Copy moved line into grid.
 		for (let x = 0u8; x < g.grid_size; x += 1) {
-			if (g.grid[y][x] != row[x]) {
+			if (g.grid[y][x] != line[x]) {
 				moved = true;
 			};
-			g.grid[y][x] = row[x];
+			g.grid[y][x] = line[x];
 		};
 	};
 	return moved;
