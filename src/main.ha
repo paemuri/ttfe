@@ -130,7 +130,7 @@ fn key_direction(key: []u8) (direction | void) = {
 		switch (key[2]: rune) {
 		case 'A' => return direction::UP;
 		case 'B' => return direction::DOWN;
-		case 'C' =>return direction::RIGHT;
+		case 'C' => return direction::RIGHT;
 		case 'D' => return direction::LEFT;
 		case => return;
 		};
@@ -343,7 +343,8 @@ fn has_moves(g: *game) bool = {
 	for (let y = 0u8; y < g.grid_size; y += 1) {
 		for (let x = 0u8; x < g.grid_size; x += 1) {
 			const value = g.grid[y][x];
-			// There are moves if there is either an empty cell, or two equal tiles are next to each other.
+			// There are moves if there is either an empty cell, or
+			// two equal tiles are next to each other.
 			if (value == 0) { return true; };
 			if (x < last && value == g.grid[y][x + 1]) {
 				return true;
