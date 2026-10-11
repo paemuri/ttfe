@@ -77,10 +77,7 @@ fn run(grid_size: u8) void = {
 	draw(&g);
 
 	const moved = move_left(&g);
-	if (moved) {
-		spawn(&g);
-		spawn(&g);
-	};
+	if (moved) { spawn(&g);	};
 	draw(&g);
 };
 
@@ -131,14 +128,14 @@ fn move_left(g: *game) bool = {
 		// Will represent the new row, _after_ the movement.
 		let row: [MAX_GRID_SIZE]u32 = [0...];
 		// Items in row.
-		let i = 0u8;
+		let count = 0u8;
 		// Whether last item in row was just merged.
 		let merged = false;
 
 		for (let y = 0u8; y < g.grid_size; y += 1) {
 			const cell = g.grid[x][y];
 
-			// Ignore zeroes, as they aren't moved.
+			// Ignore zeroes. Game's rules.
 			if (cell == 0) {
 				continue;
 			};
@@ -147,18 +144,19 @@ fn move_left(g: *game) bool = {
 			// 1. There are items before
 			// 2. The last one has the same value as current one
 			// 3. Last one wasn't merged
-			// Then merge it. Otherwise, just add to the row.
-			if (i > 0 && row[i-1] == cell && !merged) {
-				row[i-1] *= 2;
-				g.score += row[i-1];
+			// Then merge it. Otherwise, just add to the row and continue.
+			if (count > 0 && row[count-1] == cell && !merged) {
+				row[count-1] *= 2;
 				merged = true;
+				g.score += row[count-1];
 			} else {
-				row[i] = cell;
-				i += 1;
+				row[count] = cell;
+				count += 1;
 				merged = false;
 			};
 		};
 
+		// Copy moved row into grid.
 		for (let y = 0u8; y < g.grid_size; y += 1) {
 			if (g.grid[x][y] != row[y]) {
 				moved = true;
