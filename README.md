@@ -8,12 +8,6 @@
 
 [![Example](https://asciinema.org/a/349256.svg "Example")][1]
 
-## Build
-
-```sh
-hare build
-```
-
 ## Usage
 
 ```sh
