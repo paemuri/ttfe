@@ -6,7 +6,7 @@ use strconv;
 def MIN_GRID_SIZE: u8 = 2;
 def MAX_GRID_SIZE: u8 = 16;
 def DEFAULT_GRID_SIZE: u8 = 4;
-def VERSION: str = "0.1.0";
+def VERSION: str = "1.0.0";
 def HELP: str = ""
 "Usage: ttfe [OPTION] [grid size]
 
