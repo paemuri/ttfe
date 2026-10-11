@@ -87,11 +87,9 @@ fn run(grid_size: u8) void = {
 	draw(&g);
 	let buf: [3]u8 = [0...];
 	for (true) {
-		const n = match (io::read(os::stdin_file, buf[..])!) {
-		case let n: size =>
-			yield n;
-		case io::EOF =>
-			break;
+		const buf_bytes = match (io::read(os::stdin_file, buf[..])!) {
+		case let n: size => yield n;
+		case io::EOF => break;
 		};
 
 		// q or Ctrl-C quits.
@@ -99,16 +97,12 @@ fn run(grid_size: u8) void = {
 			break;
 		};
 
-		const dir = match (key_direction(buf[..n])) {
-		case let d: direction =>
-			yield d;
-		case void =>
-			continue;
+		const dir = match (key_direction(buf[..buf_bytes])) {
+		case let d: direction => yield d;
+		case void => continue;
 		};
 
-		if (move(&g, dir)) {
-			spawn(&g);
-		};
+		if (move(&g, dir)) { spawn(&g); };
 		draw(&g);
 	};
 };
@@ -116,32 +110,22 @@ fn run(grid_size: u8) void = {
 fn key_direction(key: []u8) (direction | void) = {
 	if (len(key) == 1) {
 		switch (key[0]: rune) {
-		case 'h' =>
-			return direction::LEFT;
-		case 'j' =>
-			return direction::DOWN;
-		case 'k' =>
-			return direction::UP;
-		case 'l' =>
-			return direction::RIGHT;
-		case =>
-			return;
+		case 'h' => return direction::LEFT;
+		case 'j' => return direction::DOWN;
+		case 'k' => return direction::UP;
+		case 'l' => return direction::RIGHT;
+		case => return;
 		};
 	};
 
 	// Arrow keys are 3 bytes: Esc, '[' and a letter.
 	if (len(key) == 3 && key[0] == 0x1b && key[1]: rune == '[') {
 		switch (key[2]: rune) {
-		case 'A' =>
-			return direction::UP;
-		case 'B' =>
-			return direction::DOWN;
-		case 'C' =>
-			return direction::RIGHT;
-		case 'D' =>
-			return direction::LEFT;
-		case =>
-			return;
+		case 'A' => return direction::UP;
+		case 'B' => return direction::DOWN;
+		case 'C' =>return direction::RIGHT;
+		case 'D' => return direction::LEFT;
+		case => return;
 		};
 	};
 };
