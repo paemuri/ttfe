@@ -63,8 +63,7 @@ export fn main() void = {
 
 fn fail_arg(fmtstr: str, arg: str) never = {
 	fmt::errorfln(fmtstr, arg)!;
-	fmt::errorln("Run `ttfe --help` for usage.")!;
-	os::exit(1);
+	fmt::fatal("Run `ttfe --help` for usage.");
 };
 
 fn run(grid_size: u8) void = {
@@ -77,6 +76,10 @@ fn run(grid_size: u8) void = {
 
 	spawn(&g);
 	spawn(&g);
+
+	if (!tty::isatty(os::stdin_file) || !tty::isatty(os::stdout_file)) {
+		fmt::fatal("ttfe: must run in a terminal");
+	};
 
 	let term = tty::termios_query(os::stdin_file)!;
 	defer tty::termios_restore(&term);
