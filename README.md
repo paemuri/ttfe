@@ -3,7 +3,9 @@
 [![License][badge-1-img]][badge-1-link]
 [![AUR][badge-2-img]][badge-2-link]
 
-2048 game in the terminal!
+## About
+
+2048 game in the terminal.
 
 ## Demo
 
