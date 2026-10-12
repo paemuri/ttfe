@@ -41,21 +41,24 @@ Ctrl-C.
 
 ## Source code
 
-The main repository is on [SourceHut][2]. A mirror exists on [GitHub][3] for
-convenience, but it might occasionally be outdated.
+The main repository is on [SourceHut][source-srht]. A mirror exists on
+[GitHub][source-github] for convenience, but it might occasionally be
+outdated.
 
 ### License and contribution
 
-This project's code is in the public domain. See the [LICENSE file][4].
+This project's code is in the public domain. See the
+[LICENSE file][source-license].
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you shall be in the public domain, without any
 additional terms or conditions.
 
 [1]: https://asciinema.org/a/349256
-[2]: https://git.sr.ht/~paemuri/ttfe
-[3]: https://github.com/paemuri/ttfe
-[4]: ./LICENSE
 
 [badge-1-img]: https://img.shields.io/badge/license-Unlicense-green?style=flat-square
 [badge-1-link]: ./LICENSE
+
+[source-srht]: https://git.sr.ht/~paemuri/ttfe
+[source-github]: https://github.com/paemuri/ttfe
+[source-license]: ./LICENSE
