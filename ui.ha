@@ -8,7 +8,8 @@ use unix::tty;
 
 fn play(g: *game) (void | io::error) = {
 	if (!tty::isatty(os::stdin_file) || !tty::isatty(os::stdout_file)) {
-		fmt::fatal("ttfe: must run in a terminal");
+		fmt::errorln("ttfe: must run in a terminal")!;
+		os::exit(os::status::FAILURE);
 	};
 
 	let term = tty::termios_query(os::stdin_file)?;

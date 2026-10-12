@@ -58,12 +58,14 @@ export fn main() void = {
 	match (play(&g)) {
 	case void => void;
 	case let err: io::error =>
-		fmt::fatalf("ttfe: {}", io::strerror(err));
+		fmt::errorfln("ttfe: {}", io::strerror(err))!;
+		os::exit(os::status::FAILURE);
 	};
 };
 
 fn fail_arg(fmtstr: str, arg: str) never = {
 	fmt::error("ttfe: ")!;
 	fmt::errorfln(fmtstr, arg)!;
-	fmt::fatal("Run `ttfe --help` for usage.");
+	fmt::errorln("Run `ttfe --help` for usage.")!;
+	os::exit(2);
 };
