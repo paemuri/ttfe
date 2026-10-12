@@ -1,6 +1,7 @@
 # TTFE
 
 [![License][badge-1-img]][badge-1-link]
+[![AUR][badge-2-img]][badge-2-link]
 
 2048 game in the terminal!
 
@@ -58,6 +59,8 @@ additional terms or conditions.
 
 [badge-1-img]: https://img.shields.io/badge/license-Unlicense-green?style=flat-square
 [badge-1-link]: ./LICENSE
+[badge-2-img]: https://img.shields.io/aur/version/ttfe?style=flat-square
+[badge-2-link]: https://aur.archlinux.org/packages/ttfe
 
 [source-srht]: https://git.sr.ht/~paemuri/ttfe
 [source-github]: https://github.com/paemuri/ttfe
