@@ -5,9 +5,9 @@
 
 2048 game in the terminal!
 
-## Game
+## Demo
 
-[![Example](https://asciinema.org/a/1268156.svg "Example")][1]
+[![Demo](https://asciinema.org/a/1268156.svg "Demo")][1]
 
 ## Installation
 
