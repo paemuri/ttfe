@@ -7,7 +7,7 @@
 
 ## Game
 
-[![Example](https://asciinema.org/a/349256.svg "Example")][1]
+[![Example](https://asciinema.org/a/1268156.svg "Example")][1]
 
 ## Installation
 
@@ -55,7 +55,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you shall be in the public domain, without any
 additional terms or conditions.
 
-[1]: https://asciinema.org/a/349256
+[1]: https://asciinema.org/a/1268156
 
 [badge-1-img]: https://img.shields.io/badge/license-Unlicense-green?style=flat-square
 [badge-1-link]: ./LICENSE
