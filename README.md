@@ -58,6 +58,10 @@ for inclusion in the work by you shall be licensed under the same license as
 the material to which it is contributed, without any additional terms or
 conditions.
 
+### License history
+
+Starting with v2.0.0, this project is licensed under AGPL-3.0-or-later.
+
 [1]: https://asciinema.org/a/1268156
 
 [badge-1-img]: https://img.shields.io/badge/license-AGPL--3.0--or--later-green?style=flat-square
